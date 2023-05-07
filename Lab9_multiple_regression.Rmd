@@ -1,6 +1,6 @@
 ---
 title: "Multiple linear regression"
-author: ""
+author: "John Cruz"
 output:
   pdf_document: default
   html_document:
@@ -61,13 +61,31 @@ We have observations on 21 different variables, some categorical and some numeri
     question posed in the paper is whether beauty leads directly to the
     differences in course evaluations. Given the study design, is it possible to
     answer this question as it is phrased? If not, rephrase the question.
+    
+This is an observational study as it is performed through an evaluation. Given that a professor can alter their perception to others throughout the semester, the question should be, "Does students general opinion of a professor's appearance influence how they score on an evaluation?"
 
 2.  Describe the distribution of `score`. Is the distribution skewed? What does 
     that tell you about how students rate courses? Is this what you expected to 
     see? Why, or why not?
+    
+The distribution is left-skewed, and shows that students generally rate courses above average. I expected a right-skewed distribution as I believe people generally take the time to complete evaluations when they have negative experiences.
+    
+```{r plot-score}
+evals |> 
+  ggplot(aes(x = score)) +
+  geom_density()
+```
 
 3.  Excluding `score`, select two other variables and describe their relationship 
     with each other using an appropriate visualization.
+    
+There appears to be a small relationship between age and beauty average. As a professor's age increase, their beauty average range tends to drop and become a narrower range. 
+    
+```{r plot-age-bty_avg}
+evals |> 
+  ggplot(aes(x = age, y = bty_avg)) +
+  geom_point()
+```
 
 ## Simple linear regression
 
@@ -80,8 +98,12 @@ ggplot(data = evals, aes(x = bty_avg, y = score)) +
 
 Before you draw conclusions about the trend, compare the number of observations in the data frame with the approximate number of points on the scatterplot. Is anything awry?
 
+Many points appear to be missing from the plot as there should be about 463 plotted observations.
+
 4.  Replot the scatterplot, but this time use `geom_jitter` as your layer. What 
     was misleading about the initial scatterplot?
+    
+The initial scatterplot was overfitting the points over each other, where now we can see how the points are not so closely overlapped. 
 
 ```{r scatter-score-bty_avg-jitter}
 ggplot(data = evals, aes(x = bty_avg, y = score)) +
@@ -93,6 +115,19 @@ ggplot(data = evals, aes(x = bty_avg, y = score)) +
     professor score by average beauty rating. Write out the equation for the linear 
     model and interpret the slope. Is average beauty score a statistically significant
     predictor? Does it appear to be a practically significant predictor?
+    
+\[
+  \hat{y} = 3.88034 + 0.06664 \times bty\_avg
+\]
+
+Average beauty score appears to be statistically significant. It does not appear to be a practically significant predictor as the overall model's \[R^2 = 0.03502\]
+    
+```{r lm-model}
+m_bty <-
+  lm(score ~ bty_avg, data = evals)
+
+summary(m_bty)
+```
     
 Add the line of the bet fit model to your plot using the following:
     
